@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
 
 namespace ScheDungeon.Modules
 {
@@ -36,13 +37,25 @@ namespace ScheDungeon.Modules
             var cb = new ComponentBuilder()
                 .WithButton("Create Event", $"create_event_button:{Context.User.Id}");
 
-            await RespondAsync("Pressing the following button will create your event. Once it's created, people will be able to subscribe to your game for reminders, and you will be able to schedule sessions.", components: cb.Build());
+            var eb = new EmbedBuilder()
+                .WithColor(Color.Blue)
+                .WithTitle("Create a New Event")
+                .WithDescription("Pressing the following button will allow you to create your event. Once it's created, people will be able to subscribe to your game for reminders, and you will be able to schedule sessions.");
+
+            await RespondAsync(embed: eb.Build(), components:cb.Build());
         }
 
         [DoUserCheck]
         [ComponentInteraction("create_event_button:*")]
         public async Task CreateEventButtonPressedAsync()
-            => await Context.Interaction.RespondWithModalAsync<CreateEventModal>("create_event_modal");
+        {
+            var cb = new ComponentBuilder()
+                .WithButton("Create Event", "disabled_button", disabled: true);
+
+            var msg = Context.Interaction.GetOriginalResponseAsync().Result;
+            await Context.Channel.ModifyMessageAsync(msg.Id, (m => m.Components = cb.Build()));
+            await Context.Interaction.RespondWithModalAsync<CreateEventModal>("create_event_modal");
+        }
 
         public class CreateEventModal : IModal
         {
@@ -60,11 +73,14 @@ namespace ScheDungeon.Modules
         [ModalInteraction("create_event_modal")]
         public async Task CreateEventModalResponseAsync(CreateEventModal modal)
         {
-            string response = $"I received your response to the 'Create an Event' dialog box. I don't store any info yet, but here's the data I received: {Environment.NewLine}" +
-                $"Event Name: {modal.EventName}{Environment.NewLine}" +
-                $"Event Description: {modal.EventDescription}";
+            var eb = new EmbedBuilder()
+                .WithColor(Color.Green)
+                .WithTitle("New Event Created!")
+                .WithDescription("I received your response to the 'Create an Event' dialog box. I don't store any info yet, but here's the data I received:")
+                .AddField("Event Name", modal.EventName)
+                .AddField("Event Description", modal.EventDescription);
 
-            await RespondAsync(response);
+            await RespondAsync(embed: eb.Build());
         }
     }
 }
