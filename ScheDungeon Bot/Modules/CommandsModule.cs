@@ -24,14 +24,6 @@ namespace ScheDungeon.Modules
             _handler = handler;
         }
 
-        [SlashCommand("latency", "Debug message to test if my commands are being registered.")]
-        public async Task PingAsync()
-            => await RespondAsync(text: $"DEBUG: Latency is {Context.Client.Latency}ms");
-
-        [SlashCommand("latency-ephemeral", "Debug message to test if my commands are being registered. Ephemeral version.")]
-        public async Task PingEphemeralAsync()
-            => await RespondAsync(text: $"DEBUG: Latency is {Context.Client.Latency}ms. Ephemeral", ephemeral: true);
-
         [SlashCommand("create-event", "Create a new event that people can subscribe to for updates.")]
         public async Task CreateNewEventAsync()
         {
