@@ -105,5 +105,64 @@ namespace ScheDungeon.Modules
 
             _handler.DisableLiveButton(Context);
         }
+
+        // TODO: Remove this later. This doesn't need to be a command but it makes my life easier for debugging.
+        [SlashCommand("debug-clear-database", "Clears the database of all events, players, and sessions.")]
+        public async Task DebugClearDatabaseAsync()
+        {
+            var cb = new ComponentBuilder();
+            var eb = new EmbedBuilder();
+
+            if (Context.User.Username != "bytehammer")
+            {
+                eb.WithColor(Color.Red)
+                    .WithTitle("ERROR: You're not my boss.")
+                    .WithDescription("Only ByteHammer is allowed to do this while debugging his bot. You're not supposed to see this.");
+
+                await RespondAsync(embed: eb.Build());
+            }
+            else
+            {
+                eb.WithColor(Color.Gold)
+                .WithTitle("!!!DEBUG: CLEAR DATABASE!!!")
+                .WithDescription("WARNING: THIS IS IRREVERSIBLE. ALL DATA WILL BE CLEARED. PRESS BUTTON TO CONFIRM.");
+
+                cb.WithButton("CLEAR DATABASE", "clear_database_button", style: ButtonStyle.Danger);
+
+                await RespondAsync(embed: eb.Build(), components: cb.Build());
+                _handler?.AddLiveButton(Context, "CLEAR DATABASE");
+            }
+        }
+
+        // TODO: Remove this later. This doesn't need to be a command but it makes my life easier for debugging.
+        [ComponentInteraction("clear_database_button")]
+        public async Task ClearDatabaseButtonPressedAsync()
+        {
+            foreach (var se in _handler.Database.ScheduledEvents)
+            {
+                _handler.Database.ScheduledEvents.Remove(se);
+            }
+
+            foreach (var player in _handler.Database.Players)
+            {
+                _handler.Database.Players.Remove(player);
+            }
+
+            foreach (var session in _handler.Database.Sessions)
+            {
+                _handler.Database.Sessions.Remove(session);
+            }
+
+            _handler.Database.SaveChanges();
+
+            var eb = new EmbedBuilder()
+                .WithColor(Color.Gold)
+                .WithTitle("!!!DEBUG: DATABASE CLEARED!!!")
+                .WithDescription("The database is cleared and should now be empty");
+
+            await RespondAsync(embed: eb.Build());
+
+            _handler.DisableLiveButton(Context);
+        }
     }
 }
