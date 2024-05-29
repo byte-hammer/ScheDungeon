@@ -2,6 +2,7 @@
 using Discord.Interactions;
 using Discord.WebSocket;
 using Microsoft.Extensions.Configuration;
+using ScheDungeon.EntityFramework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,6 +16,7 @@ namespace ScheDungeon
     {
         // Keep a list of active buttons so we can turn them off after they've been used to prevent duplicate entries
         internal Dictionary<ulong, LiveButton> LiveButtons { get; set; }
+        internal ScheduledEventContext Database {  get; private set; }
 
         private readonly DiscordSocketClient _client;
         private readonly InteractionService _interactionService;
@@ -35,6 +37,8 @@ namespace ScheDungeon
             _periodicTimer = new PeriodicTimer(TimeSpan.FromMinutes(1));
             _cancellationTokenSource = new CancellationTokenSource();
             _checkButtonTimeoutTask = CheckForButtonTimeoutsAsync();
+
+            Database = new ScheduledEventContext();
 
             // When testing, it's extremely inconvenient that registering a new global command can take up to an hour.
             // So, when debugging, we'll register them as commands for a specific server, or "guild", which is fast.

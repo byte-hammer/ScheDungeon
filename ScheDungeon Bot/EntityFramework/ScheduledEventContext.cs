@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -38,6 +39,7 @@ namespace ScheDungeon.EntityFramework
 
     public class ScheduledEvent
     {
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
         public string Name { get; set; } = "Unnamed Event";
         public string Description { get; set; } = "";
@@ -48,6 +50,7 @@ namespace ScheDungeon.EntityFramework
 
     public class Player
     {
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
         public string Name { get; set; } = "Unspecified Player";
 
@@ -57,6 +60,7 @@ namespace ScheDungeon.EntityFramework
 
     public class Session
     {
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
         public int StartTime { get; set; } // Stored as Unix Epoch timestamp
         public bool Triggered { get; set; } 
