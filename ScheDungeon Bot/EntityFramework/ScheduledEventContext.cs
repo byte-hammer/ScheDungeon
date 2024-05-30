@@ -16,7 +16,6 @@ namespace ScheDungeon.EntityFramework
         public string DbPath { get; }
 
         public DbSet<ScheduledEvent> ScheduledEvents { get; set; }
-        public DbSet<Player> Players { get; set; }
         public DbSet<Session> Sessions { get; set; }
 
         public ScheduledEventContext()
@@ -43,19 +42,10 @@ namespace ScheDungeon.EntityFramework
         public int Id { get; set; }
         public string Name { get; set; } = "Unnamed Event";
         public string Description { get; set; } = "";
+        public ulong CustomRoleId { get; set; }
+        public ulong HomeChannelId { get; set; }
 
-        public ICollection<Player> Players { get; } = new List<Player>();
         public ICollection<Session> Sessions { get; } = new List<Session>();
-    }
-
-    public class Player
-    {
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int Id { get; set; }
-        public string Name { get; set; } = "Unspecified Player";
-
-        public int? ScheduledEventId { get; set; }
-        public ScheduledEvent? ScheduledEvent { get; set; } = null!;
     }
 
     public class Session

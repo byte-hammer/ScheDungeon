@@ -11,7 +11,7 @@ using ScheDungeon.EntityFramework;
 namespace ScheDungeon.Migrations
 {
     [DbContext(typeof(ScheduledEventContext))]
-    [Migration("20240529024608_InitalCreate")]
+    [Migration("20240530020325_InitalCreate")]
     partial class InitalCreate
     {
         /// <inheritdoc />
@@ -20,35 +20,21 @@ namespace ScheDungeon.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.5");
 
-            modelBuilder.Entity("ScheDungeon.EntityFramework.Player", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<int?>("ScheduledEventId")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ScheduledEventId");
-
-                    b.ToTable("Players");
-                });
-
             modelBuilder.Entity("ScheDungeon.EntityFramework.ScheduledEvent", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<ulong>("CustomRoleId")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("TEXT");
+
+                    b.Property<ulong>("HomeChannelId")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -81,15 +67,6 @@ namespace ScheDungeon.Migrations
                     b.ToTable("Sessions");
                 });
 
-            modelBuilder.Entity("ScheDungeon.EntityFramework.Player", b =>
-                {
-                    b.HasOne("ScheDungeon.EntityFramework.ScheduledEvent", "ScheduledEvent")
-                        .WithMany("Players")
-                        .HasForeignKey("ScheduledEventId");
-
-                    b.Navigation("ScheduledEvent");
-                });
-
             modelBuilder.Entity("ScheDungeon.EntityFramework.Session", b =>
                 {
                     b.HasOne("ScheDungeon.EntityFramework.ScheduledEvent", "ScheduledEvent")
@@ -101,8 +78,6 @@ namespace ScheDungeon.Migrations
 
             modelBuilder.Entity("ScheDungeon.EntityFramework.ScheduledEvent", b =>
                 {
-                    b.Navigation("Players");
-
                     b.Navigation("Sessions");
                 });
 #pragma warning restore 612, 618

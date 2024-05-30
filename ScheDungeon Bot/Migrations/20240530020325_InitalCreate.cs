@@ -17,30 +17,13 @@ namespace ScheDungeon.Migrations
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     Name = table.Column<string>(type: "TEXT", nullable: false),
-                    Description = table.Column<string>(type: "TEXT", nullable: false)
+                    Description = table.Column<string>(type: "TEXT", nullable: false),
+                    CustomRoleId = table.Column<ulong>(type: "INTEGER", nullable: false),
+                    HomeChannelId = table.Column<ulong>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ScheduledEvents", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Players",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    Name = table.Column<string>(type: "TEXT", nullable: false),
-                    ScheduledEventId = table.Column<int>(type: "INTEGER", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Players", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Players_ScheduledEvents_ScheduledEventId",
-                        column: x => x.ScheduledEventId,
-                        principalTable: "ScheduledEvents",
-                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -64,11 +47,6 @@ namespace ScheDungeon.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Players_ScheduledEventId",
-                table: "Players",
-                column: "ScheduledEventId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Sessions_ScheduledEventId",
                 table: "Sessions",
                 column: "ScheduledEventId");
@@ -77,9 +55,6 @@ namespace ScheDungeon.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "Players");
-
             migrationBuilder.DropTable(
                 name: "Sessions");
 
