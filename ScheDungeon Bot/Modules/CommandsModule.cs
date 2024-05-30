@@ -118,7 +118,7 @@ namespace ScheDungeon.Modules
         // //////////////////////////////////////////////////////////////////////////////////////// //
 
         // //////////////////////////////////////////////////////////////////////////////////////// //
-        // SUBSCRIBE-TO-EVENT WORKFLOWS                                                               //
+        // SUBSCRIBE-TO-EVENT WORKFLOWS                                                             //
         // //////////////////////////////////////////////////////////////////////////////////////// //
         [SlashCommand("subscribe-to-event", "Select one or more event roles to give yourself for event updates and notifications.")]
         public async Task SubscribeToEventAsync()
@@ -140,7 +140,7 @@ namespace ScheDungeon.Modules
             var mb = new SelectMenuBuilder();
 
             mb.WithPlaceholder("Select an event role.")
-                .WithCustomId("event_role_menu");
+                .WithCustomId($"event_subscribe_menu:{Context.User.Id}");
 
             foreach (var se in _handler.Database.ScheduledEvents)
             {
@@ -168,8 +168,9 @@ namespace ScheDungeon.Modules
             }
         }
 
-        [ComponentInteraction("event_role_menu")]
-        public async Task AddEventRolesToUserAsync(string[] selections)
+        [DoUserCheck]
+        [ComponentInteraction("event_subscribe_menu:*")]
+        public async Task AddEventRoleToUserAsync(string userId, string[] selections)
         {
             var eb = new EmbedBuilder();
             
@@ -189,6 +190,85 @@ namespace ScheDungeon.Modules
                 eb.WithColor(Color.Red)
                     .WithTitle("Error: Selections are null.")
                     .WithDescription("There was an error processing your role selection. Tell ByteHammer to check `AddEventRolesToUserAsync`");
+            }
+
+            await RespondAsync(embed: eb.Build());
+        }
+        // //////////////////////////////////////////////////////////////////////////////////////// //
+
+        // //////////////////////////////////////////////////////////////////////////////////////// //
+        // UNSUBSCRIBE-TO-EVENT WORKFLOWS                                                           //
+        // //////////////////////////////////////////////////////////////////////////////////////// //
+        [SlashCommand("unsubscribe-from-event", "Unsubscribe from an event. You will no longer receive automated pings from the selected events.")]
+        public async Task UnsubscribeFromEventAsync()
+        {
+            // Check to see if we even have any events to unsubscribe to.
+            if (!_handler.Database.ScheduledEvents.Any())
+            {
+                var eb = new EmbedBuilder()
+                    .WithColor(Color.Red)
+                    .WithTitle("Error: No Events")
+                    .WithDescription("There are no events to unsubscribe from!");
+
+                await RespondAsync(embed: eb.Build());
+                return;
+            }
+
+            // Build a role select menu with all of the event roles in the database that the user is subscribed to
+            var cb = new ComponentBuilder();
+            var mb = new SelectMenuBuilder();
+
+            mb.WithPlaceholder("Select an event role.")
+                .WithCustomId($"event_unsubscribe_menu:{Context.User.Id}");
+
+            foreach (var se in _handler.Database.ScheduledEvents)
+            {
+                var role = Context.Guild.GetRole(se.CustomRoleId);
+                if (role != null && Context.User is SocketGuildUser user && user.Roles.Any(r => r == role))
+                {
+                    mb.AddOption(role.Name, role.Id.ToString());
+                }
+            }
+
+            // Check if there are any event roles available for the user.
+            if (mb.Options.Any())
+            {
+                cb.WithSelectMenu(mb);
+                await RespondAsync(components: cb.Build());
+            }
+            else
+            {
+                var eb = new EmbedBuilder()
+                    .WithColor(Color.Blue)
+                    .WithTitle("No event roles assigned!")
+                    .WithDescription("You are unsubscribed from all the events! There's nothing else to unsubscribe from.");
+
+                await RespondAsync(embed: eb.Build());
+            }
+        }
+
+        [DoUserCheck]
+        [ComponentInteraction("event_unsubscribe_menu:*")]
+        public async Task RemoveEventRoleFromUserAsync(string userId, string[] selections)
+        {
+            var eb = new EmbedBuilder();
+
+            if (selections.Any())
+            {
+                ulong roleId;
+                UInt64.TryParse(selections.First(), out roleId);
+                var eventRole = Context.Guild.GetRole(roleId);
+                await ((IGuildUser)Context.User).RemoveRoleAsync(eventRole);
+
+                eb.WithColor(Color.Green)
+                    .WithTitle($"Role Removed: {eventRole.Name}")
+                    .WithDescription($"You have been unassigned the event role {eventRole.Name}");
+            }
+            else
+            {
+                eb.WithColor(Color.Red)
+                    .WithTitle("Error: Selections are null.")
+                    .WithDescription("There was an error processing your role selection. Tell ByteHammer to check `RemoveEventRoleFromUserAsync`");
             }
 
             await RespondAsync(embed: eb.Build());
