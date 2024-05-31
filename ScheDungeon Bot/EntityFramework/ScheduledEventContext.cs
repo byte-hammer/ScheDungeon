@@ -44,6 +44,7 @@ namespace ScheDungeon.EntityFramework
         public string Description { get; set; } = "";
         public ulong CustomRoleId { get; set; }
         public ulong HomeChannelId { get; set; }
+        public ulong EventOwner { get; set; }
 
         public ICollection<Session> Sessions { get; } = new List<Session>();
     }
@@ -52,8 +53,9 @@ namespace ScheDungeon.EntityFramework
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
-        public int StartTime { get; set; } // Stored as Unix Epoch timestamp
-        public bool Triggered { get; set; } 
+        public ulong GuildEventId { get; set; }
+        public double StartTime { get; set; } // Stored as Unix Epoch timestamp
+        public bool Triggered { get; set; } = false;
         
         public int? ScheduledEventId { get; set; }
         public ScheduledEvent? ScheduledEvent { get; set; } = null!;

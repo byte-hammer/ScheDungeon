@@ -19,7 +19,8 @@ namespace ScheDungeon.Migrations
                     Name = table.Column<string>(type: "TEXT", nullable: false),
                     Description = table.Column<string>(type: "TEXT", nullable: false),
                     CustomRoleId = table.Column<ulong>(type: "INTEGER", nullable: false),
-                    HomeChannelId = table.Column<ulong>(type: "INTEGER", nullable: false)
+                    HomeChannelId = table.Column<ulong>(type: "INTEGER", nullable: false),
+                    EventOwner = table.Column<ulong>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -32,7 +33,8 @@ namespace ScheDungeon.Migrations
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    StartTime = table.Column<int>(type: "INTEGER", nullable: false),
+                    GuildEventId = table.Column<ulong>(type: "INTEGER", nullable: false),
+                    StartTime = table.Column<double>(type: "REAL", nullable: false),
                     Triggered = table.Column<bool>(type: "INTEGER", nullable: false),
                     ScheduledEventId = table.Column<int>(type: "INTEGER", nullable: true)
                 },

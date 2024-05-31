@@ -30,6 +30,9 @@ namespace ScheDungeon.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<ulong>("EventOwner")
+                        .HasColumnType("INTEGER");
+
                     b.Property<ulong>("HomeChannelId")
                         .HasColumnType("INTEGER");
 
@@ -48,11 +51,14 @@ namespace ScheDungeon.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<ulong>("GuildEventId")
+                        .HasColumnType("INTEGER");
+
                     b.Property<int?>("ScheduledEventId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("StartTime")
-                        .HasColumnType("INTEGER");
+                    b.Property<double>("StartTime")
+                        .HasColumnType("REAL");
 
                     b.Property<bool>("Triggered")
                         .HasColumnType("INTEGER");
